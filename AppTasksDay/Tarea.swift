@@ -7,17 +7,26 @@
 //
 
 import Foundation
+import RealmSwift
 
-class Tarea
+class Tarea : Object
 {
     //var idusuario: Int
-    var idtarea: Int
-    var descripcion: String
-    var estado: String
+    @objc dynamic var idtarea: Int = 0
+    @objc dynamic var descripcion: String?
+    @objc dynamic var estado: String?
     
-    init(_ idtarea: Int,_ descripcion: String,_ estado: String) {
+    override static func primaryKey() -> String? {
+        return "idtarea"
+    }
+    
+    convenience required init(_ idtarea: Int,_ descripcion: String,_ estado: String) {
+        self.init()
         self.idtarea=idtarea
         self.descripcion=descripcion
         self.estado=estado
+        
     }
+    
+    
 }

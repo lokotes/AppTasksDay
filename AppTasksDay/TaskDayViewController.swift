@@ -15,6 +15,8 @@ class TaskDayViewController: UIViewController, UITableViewDataSource, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tareas = Array(DBManager.sharedInstance.getTareaFromDB())
+        self.tblTasksDay.reloadData()
         // Do any additional setup after loading the view, typically from a nib.
     }
 
@@ -37,7 +39,9 @@ class TaskDayViewController: UIViewController, UITableViewDataSource, UITableVie
                                        handler: { (action:UIAlertAction) -> Void in
                                         //Guardamos el texto del textField en el array tasks y recargamos la table view
                                         let textField = alert.textFields!.first
-                                        self.tareas.append(Tarea(Int(arc4random()),textField!.text!,"Sin hacer"))
+                                        let tareanueva = Tarea(Int(arc4random()),textField!.text!,"Sin hacer")
+                                        self.tareas.append(tareanueva)
+                                        DBManager.sharedInstance.addInternalNew(object: tareanueva)
                                         //self.tasks.append(textField!.text!)
                                         self.tblTasksDay.reloadData()
         })
@@ -101,18 +105,24 @@ class TaskDayViewController: UIViewController, UITableViewDataSource, UITableVie
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
         let deleteAction = UITableViewRowAction(style: .destructive, title: "Eliminar") { (action, indexpath) in
+            print(self.tareas[indexPath.row])
+            DBManager.sharedInstance.deleteInternalNewFromDb(object: self.tareas[indexPath.row])
             self.tareas.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
         deleteAction.backgroundColor = .red
         let estadoAction = UITableViewRowAction(style: .normal, title: "En Progreso") { (action, indexpath) in
-            self.tareas[indexPath.row].estado = "En Progreso"
+            
+            //self.tareas[indexPath.row].estado = "En Progreso"
+            DBManager.sharedInstance.updateInternalNewStateFromDb(object: self.tareas[indexPath.row], estado: "En Progreso")
+            
             self.tblTasksDay.reloadData()
             
         }
         estadoAction.backgroundColor = .orange
         let finishAction = UITableViewRowAction(style: .normal, title: "Realizado") { (action, indexpath) in
-            self.tareas[indexPath.row].estado = "Realizado"
+            //self.tareas[indexPath.row].estado = "Realizado"
+            DBManager.sharedInstance.updateInternalNewStateFromDb(object: self.tareas[indexPath.row], estado: "Realizado")
             self.tblTasksDay.reloadData()
             
         }
